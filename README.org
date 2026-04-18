@@ -3,25 +3,27 @@
 Bitwarden secret retrieval for Org Babel.
 
 * Quick start
-
-Select backend:
-#+begin_src elisp
-(setq org-bitwarden-backend 'rbw) ; default, recommended
-;; or
-(setq org-bitwarden-backend 'bw)
-#+end_src
+: (require 'org-bitwarden)
+It automatically registers the =<<bw(...)>>= Library of Babel named code block
+for use in Org Mode.
 
 Use from Org noweb:
-#+begin_src sh :noweb yes
-echo <<bw(item="3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15", field="password")>>
+#+begin_src shell :noweb yes
+echo '<<bw(item="3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15", field="password")>>'
 #+end_src
+(in =rbw= if field is ommited it defaults to password)
 
 Use from Elisp:
 #+begin_src elisp
 (org-bitwarden-get "3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15" "password")
 #+end_src
 
-- Note: in =rbw= "password" is implied so it can be omitted.
+- Select backend:
+  #+begin_src elisp
+  (setq org-bitwarden-backend 'rbw) ; default, recommended
+  ;; or
+  (setq org-bitwarden-backend 'bw)
+  #+end_src
 
 - Install ::
   + package-vc
@@ -56,7 +58,7 @@ Use from Elisp:
 Install one of the supported Bitwarden CLI backends, and ensure it’s available
 in =PATH=.
 
-** =rbw= (recommended)
+** =rbw= (default, recommended)
 - supports standard fields and custom fields
 - requires =rbw= in =PATH=
 
