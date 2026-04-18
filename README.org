@@ -1,0 +1,170 @@
+#+TITLE: org-bitwarden
+
+Bitwarden secret retrieval for Org Babel.
+
+* Quick start
+
+Select backend:
+#+begin_src elisp
+(setq org-bitwarden-backend 'rbw) ; default, recommended
+;; or
+(setq org-bitwarden-backend 'bw)
+#+end_src
+
+Use from Org noweb:
+#+begin_src sh :noweb yes
+echo <<bw(item="3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15", field="password")>>
+#+end_src
+
+Use from Elisp:
+#+begin_src elisp
+(org-bitwarden-get "3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15" "password")
+#+end_src
+
+- Note: in =rbw= "password" is implied so it can be omitted.
+
+- Install ::
+  + package-vc
+    #+begin_src elisp
+    (package-vc-install "https://codeberg.org/useless-utils/org-bitwarden")
+    #+end_src
+
+  + use-package + vc
+    #+begin_src elisp
+    (use-package org-bitwarden
+      :vc (:url "https://codeberg.org/useless-utils/org-bitwarden"))
+    #+end_src
+
+  + straight.el
+    #+begin_src elisp
+    (straight-use-package
+     '(org-bitwarden :type git :host codeberg :repo "useless-utils/org-bitwarden"))
+    #+end_src
+
+  + elpaca
+    #+begin_src elisp
+    (elpaca (org-bitwarden :host codeberg :repo "useless-utils/org-bitwarden"))
+    #+end_src
+
+  + or add repository to =load-path= and load package:
+    #+begin_src elisp
+    (add-to-list 'load-path "/path/to/org-bitwarden")
+    (require 'org-bitwarden)
+    #+end_src
+
+* Backends
+Install one of the supported Bitwarden CLI backends, and ensure it’s available
+in =PATH=.
+
+** =rbw= (recommended)
+- supports standard fields and custom fields
+- requires =rbw= in =PATH=
+
+Check installation:
+
+#+begin_src sh
+rbw --version
+#+end_src
+
+** =bw=
+- official Bitwarden CLI
+- supports standard fields only: =password=, =username=, =uri=, =notes=, =name=
+- requires =bw= in =PATH=
+- requires =BW_SESSION= to be in Emacs' environment
+
+Example shell setup:
+
+Run this before starting Emacs (or ensure Emacs inherits it).
+#+begin_src sh
+export BW_SESSION="$(bw unlock --raw)"
+#+end_src
+
+* Notes
+Item argument may be Bitwarden UUID or item name.
+
+Empty results signal error by default. To allow empty strings:
+
+#+begin_src elisp
+(setq org-bitwarden-allow-empty t)
+#+end_src
+
+* Noweb arguments in quoted strings
+Inline noweb arguments inside quoted strings will fail because Org resolves
+bare names as references during noweb expansion.
+
+Use intermediate block instead:
+#+begin_src org
+,#+NAME: my-token
+,#+begin_src emacs-lisp :var item="3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15" field="token1" :results none :exports none :eval never-export
+(org-bitwarden-get item field)
+,#+end_src
+
+,#+begin_src json-ts :noweb tangle
+{ "url": "<<my-token()>>" }
+,#+end_src
+#+end_src
+
+* Safety
+This package retrieves secrets into plain Emacs Lisp strings. It does not
+provide secure storage, isolation, or leak prevention after retrieval.
+
+If a noweb expansion, evaluation, or tangling writes value to a file, the
+plaintext secret will be placed there by design.
+
+Recommended practice:
+- keep helper blocks at =:exports none=
+- avoid inserting results back into Org buffers
+- do not commit secret-bearing tangled files to version-control
+- review autosave, backup, and version-control behaviour
+
+* Babel evaluation confirmation prompt
+Babel evaluation confirmation can be disabled per file with local variables:
+#+begin_src org
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# End:
+#+end_src
+
+Use only when that evaluation policy is acceptable.
+
+* Troubleshooting
+- =rbw= not found in PATH ::
+  Ensure =rbw= is installed and visible to Emacs.
+
+- =bw= not found in PATH ::
+  Ensure =bw= is installed and visible to Emacs.
+
+- =BW_SESSION= (=bw= only) not set ::
+  Unlock vault and export session token before starting Emacs, or make
+  environment available to Emacs.
+
+- Custom field fails with =bw= ::
+  Expected. Use =rbw= for custom fields.
+
+* Development
+
+Run test suite:
+#+begin_src sh
+make check
+#+end_src
+
+** Custom backends
+Backends must implement:
+
+#+begin_src elisp
+(ITEM FIELD) -> STRING
+#+end_src
+
+Example:
+
+#+begin_src elisp
+(org-bitwarden-register-backend
+ 'my-backend
+ (lambda (item field)
+   (my-vault-get item field)))
+
+(setq org-bitwarden-backend 'my-backend)
+#+end_src
+
+* Unlicense
+See [file:UNLICENSE].
