@@ -167,6 +167,3 @@ Example:
 
 (setq org-bitwarden-backend 'my-backend)
 #+end_src
-
-* Unlicense
-See [file:UNLICENSE].

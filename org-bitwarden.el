@@ -1,6 +1,6 @@
 ;;; org-bitwarden.el --- Bitwarden secret helper for Org Babel (Library of Babel) -*- lexical-binding: t; -*-
 
-;; Version: 2026.4.18
+;; Version: 2026.4.22
 ;; Package-Requires: ((emacs "27.1"))
 ;; URL: https://codeberg.org/useless-utils/org-bitwarden
 ;; Keywords: org, babel, bitwarden, secrets
