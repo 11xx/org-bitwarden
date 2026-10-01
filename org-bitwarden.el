@@ -2,7 +2,7 @@
 
 ;; Version: 2026.4.22
 ;; Package-Requires: ((emacs "27.1"))
-;; URL: https://codeberg.org/useless-utils/org-bitwarden
+;; URL: https://github.com/11xx/org-bitwarden
 ;; Keywords: org, babel, bitwarden, secrets
 
 ;;; Commentary:
@@ -14,7 +14,7 @@
 ;; Basic use:
 ;;
 ;;   #+begin_src sh :noweb yes
-;;   echo <<bw(item="3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15", field="password")>>
+;;   echo <<bw(item="00000000-0000-4000-8000-000000000000", field="password")>>
 ;;   #+end_src
 ;;
 ;; Setup:
@@ -48,7 +48,7 @@
 ;;   explicitly and is then expanded without inline arguments:
 ;;
 ;;     #+NAME: my-token
-;;     #+begin_src emacs-lisp :var item="3e8a1f42-dc4b-4f2a-b7e1-0c9a3d7b2e15" field="token1" :results none :exports none :eval never-export
+;;     #+begin_src emacs-lisp :var item="00000000-0000-4000-8000-000000000000" field="token1" :results none :exports none :eval never-export
 ;;     (org-bitwarden-get item field)
 ;;     #+end_src
 ;;
